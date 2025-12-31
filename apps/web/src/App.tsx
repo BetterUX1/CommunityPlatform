@@ -22,6 +22,7 @@ export default function App() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// Create new notice
 	async function submit(e: React.FormEvent) {
 		e.preventDefault();
 		setErr(null);
@@ -39,6 +40,20 @@ export default function App() {
 
 		setTitle('');
 		setBody('');
+		await load();
+	}
+
+	async function remove(id: number) {
+		setErr(null);
+
+		const r = await fetch(`${API}/notices/${id}`, {
+			method: 'DELETE',
+		});
+		if (!r.ok) {
+			const txt = await r.text();
+			throw new Error(`DELETE /notices/${id} failed: ${r.status} ${txt}`);
+		}
+
 		await load();
 	}
 
@@ -79,6 +94,9 @@ export default function App() {
 				{notices.map(n => (
 					<li key={n.id} style={{ marginBottom: 16 }}>
 						<strong>{n.title}</strong>
+						<button onClick={() => remove(n.id).catch(e => setErr(String(e)))}>
+							Ta bort
+						</button>
 						<div>{n.body}</div>
 						<small>{new Date(n.createdAt).toLocaleString()}</small>
 					</li>
