@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 type Notice = { id: number; title: string; body: string; createdAt: string };
 
 export default function App() {
-	const API = import.meta.env.VITE_API_BASE_URL;
+	//const API = import.meta.env.VITE_API_BASE_URL ?? '/api';
+	const API = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '');
 
 	const [notices, setNotices] = useState<Notice[]>([]);
 	const [title, setTitle] = useState('');

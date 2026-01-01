@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+  namespace: communityplatform
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: communityplatform-api:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
+          command:
+            ['sh', '-lc', 'cd /app/apps/api && pnpm dlx prisma migrate deploy']
