@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: samfallighet
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      # Prisma 7 runtime använder DATABASE_URL i PrismaService
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/samfallighet?schema=public
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # Bygg in API URL för webben (Vite)
+        VITE_API_BASE_URL: http://localhost:3000
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+
+  migrate:
+    image: communityplatform-api
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/samfallighet?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint:
+      ['sh', '-lc', 'cd /app/apps/api && pnpm dlx prisma migrate deploy']
+
+volumes:
+  pgdata:

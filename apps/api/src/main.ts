@@ -1,4 +1,4 @@
-import 'dotenv/config';
+//import 'dotenv/config'; - Not working in the container
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
