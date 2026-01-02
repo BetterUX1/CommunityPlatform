@@ -12,3 +12,11 @@ model Notice {
   body      String
   createdAt DateTime @default(now())
 }
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String
+  category  String?
+  createdAt DateTime @default(now())
+}
