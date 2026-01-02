@@ -14,6 +14,7 @@ spec:
       containers:
         - name: web
           image: communityplatform-web:latest
+          # image: ghcr.io/BetterUX1/communityplatform-web:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
