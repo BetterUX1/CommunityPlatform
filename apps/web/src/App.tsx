@@ -5,13 +5,26 @@ type Notice = { id: number; title: string; body: string; createdAt: string };
 export default function App() {
 	//const API = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
-	// Notices
-	const API = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '');
+	const API = import.meta.env.VITE_API_BASE_URL || '/api';
+	console.log(
+		'VITE_API_BASE_URL=',
+		import.meta.env.VITE_API_BASE_URL,
+		'API=',
+		API
+	);
 
+	// Notice states
 	const [notices, setNotices] = useState<Notice[]>([]);
 	const [title, setTitle] = useState('');
 	const [body, setBody] = useState('');
 	const [err, setErr] = useState<string | null>(null);
+
+	// Document states
+	const [documents, setDocuments] = useState<DocumentRow[]>([]);
+	const [docTitle, setDocTitle] = useState('');
+	const [docUrl, setDocUrl] = useState('');
+	const [docCategory, setDocCategory] = useState('');
+	const [docFile, setDocFile] = useState<File | null>(null);
 
 	// Load notices
 	async function load() {
@@ -30,11 +43,6 @@ export default function App() {
 		category: string | null;
 		createdAt: string;
 	};
-
-	const [documents, setDocuments] = useState<DocumentRow[]>([]);
-	const [docTitle, setDocTitle] = useState('');
-	const [docUrl, setDocUrl] = useState('');
-	const [docCategory, setDocCategory] = useState('');
 
 	// Load documents
 	async function loadDocuments() {
@@ -111,30 +119,44 @@ export default function App() {
 		await loadDocuments();
 	}
 
-	const [file, setFile] = useState<File | null>(null);
-
+	// --------------------------------------------------------------------------
+	// Upload document function
+	//
 	async function uploadDocument(e: React.FormEvent) {
 		e.preventDefault();
 		setErr(null);
-		if (!file) throw new Error('Välj en fil först');
+
+		if (!docFile) {
+			setErr('Välj en fil först');
+			return;
+		}
+
+		if (!docTitle.trim()) {
+			setErr('Titel krävs');
+			return;
+		}
 
 		const fd = new FormData();
-		fd.append('file', file);
-		fd.append('title', docTitle || file.name);
-		if (docCategory) fd.append('category', docCategory);
+		fd.append('file', docFile);
+		fd.append('title', docTitle.trimEnd());
+		if (docCategory.trim()) fd.append('category', docCategory.trim());
 
 		const r = await fetch(`${API}/documents/upload`, {
 			method: 'POST',
 			body: fd,
 		});
+
 		if (!r.ok) {
 			const txt = await r.text();
-			throw new Error(`UPLOAD failed: ${r.status} ${txt}`);
+			throw new Error(`Upload failed: ${r.status} ${txt}`);
 		}
 
-		setFile(null);
+		// reset
+
+		setDocFile(null);
 		setDocTitle('');
 		setDocCategory('');
+
 		await loadDocuments();
 	}
 
@@ -168,18 +190,21 @@ export default function App() {
 				</button>
 			</form>
 
-			<h2>Dokument</h2>
-
 			{/* Ladda upp dokument */}
+			<h2>Dokument</h2>
 			<form
 				onSubmit={uploadDocument}
 				style={{ display: 'grid', gap: 8, maxWidth: 520 }}
 			>
-				<input
-					placeholder='Titel (valfri)'
-					value={docTitle}
-					onChange={e => setDocTitle(e.target.value)}
-				/>
+				<label>
+					Titel
+					<br />
+					<input
+						placeholder='Titel (valfri)'
+						value={docTitle}
+						onChange={e => setDocTitle(e.target.value)}
+					/>
+				</label>
 				<input
 					placeholder='Kategori (valfri)'
 					value={docCategory}
@@ -187,9 +212,9 @@ export default function App() {
 				/>
 				<input
 					type='file'
-					onChange={e => setFile(e.target.files?.[0] ?? null)}
+					onChange={e => setDocFile(e.target.files?.[0] ?? null)}
 				/>
-				<button type='submit' disabled={!file}>
+				<button type='submit' disabled={!docFile}>
 					Ladda upp dokument
 				</button>
 			</form>

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: communityplatform-api:v4
+          image: communityplatform-api:v5
           #image: ghcr.io/BetterUX1/communityplatform-api:latest -- CI/CD build not working yet
           imagePullPolicy: IfNotPresent
           env:
