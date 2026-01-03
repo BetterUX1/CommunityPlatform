@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: communityplatform-api:v3
+          image: communityplatform-api:v4
           #image: ghcr.io/BetterUX1/communityplatform-api:latest -- CI/CD build not working yet
           imagePullPolicy: IfNotPresent
           env:
@@ -21,9 +21,15 @@ spec:
               value: '3000'
             - name: DATABASE_URL
               value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
+            - name: UPLOAD_DIR
+              value: '/data/uploads'
 
           ports:
             - containerPort: 3000
+
+          volumeMounts:
+            - name: uploads
+              mountPath: /data/uploads
 
           readinessProbe:
             httpGet:
@@ -42,6 +48,11 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
+
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: api-uploads
 ---
 apiVersion: v1
 kind: Service

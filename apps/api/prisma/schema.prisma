@@ -18,5 +18,8 @@ model Document {
   title     String
   url       String
   category  String?
+  filename  String?
+  mimeType  String?
+  size      Int?
   createdAt DateTime @default(now())
 }

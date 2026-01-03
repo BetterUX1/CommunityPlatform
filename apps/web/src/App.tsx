@@ -111,6 +111,33 @@ export default function App() {
 		await loadDocuments();
 	}
 
+	const [file, setFile] = useState<File | null>(null);
+
+	async function uploadDocument(e: React.FormEvent) {
+		e.preventDefault();
+		setErr(null);
+		if (!file) throw new Error('Välj en fil först');
+
+		const fd = new FormData();
+		fd.append('file', file);
+		fd.append('title', docTitle || file.name);
+		if (docCategory) fd.append('category', docCategory);
+
+		const r = await fetch(`${API}/documents/upload`, {
+			method: 'POST',
+			body: fd,
+		});
+		if (!r.ok) {
+			const txt = await r.text();
+			throw new Error(`UPLOAD failed: ${r.status} ${txt}`);
+		}
+
+		setFile(null);
+		setDocTitle('');
+		setDocCategory('');
+		await loadDocuments();
+	}
+
 	return (
 		<div
 			style={{ maxWidth: 900, margin: '40px auto', fontFamily: 'system-ui' }}
@@ -143,28 +170,53 @@ export default function App() {
 
 			<h2>Dokument</h2>
 
+			{/* Ladda upp dokument */}
 			<form
-				onSubmit={submitDocument}
+				onSubmit={uploadDocument}
 				style={{ display: 'grid', gap: 8, maxWidth: 520 }}
 			>
 				<input
-					placeholder='Titel'
+					placeholder='Titel (valfri)'
 					value={docTitle}
 					onChange={e => setDocTitle(e.target.value)}
-					required
-				/>
-				<input
-					placeholder='URL (https://...)'
-					value={docUrl}
-					onChange={e => setDocUrl(e.target.value)}
-					required
 				/>
 				<input
 					placeholder='Kategori (valfri)'
 					value={docCategory}
 					onChange={e => setDocCategory(e.target.value)}
 				/>
-				<button type='submit'>Lägg till dokument</button>
+				<input
+					type='file'
+					onChange={e => setFile(e.target.files?.[0] ?? null)}
+				/>
+				<button type='submit' disabled={!file}>
+					Ladda upp dokument
+				</button>
+			</form>
+
+			{/* Länka dokument via url*/}
+			<form
+				onSubmit={submitDocument}
+				style={{ display: 'grid', gap: 8, maxWidth: 520 }}
+			>
+				<input
+					placeholder='Titel (valfri)'
+					value={docTitle}
+					onChange={e => setDocTitle(e.target.value)}
+				/>
+				<input
+					placeholder='Kategori (valfri)'
+					value={docCategory}
+					onChange={e => setDocCategory(e.target.value)}
+				/>
+				<input
+					type='url'
+					value={docUrl}
+					onChange={e => setDocUrl(e.target.value)}
+				/>
+				<button type='submit' disabled={!docUrl}>
+					Länka dokument
+				</button>
 			</form>
 
 			<div style={{ marginTop: 12 }}>

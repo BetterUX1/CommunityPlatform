@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: communityplatform-web:latest
+          image: communityplatform-web:v4
           # image: ghcr.io/BetterUX1/communityplatform-web:latest
           imagePullPolicy: IfNotPresent
           ports:

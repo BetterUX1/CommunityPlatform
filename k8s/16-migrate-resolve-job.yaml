@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-resolve
+  namespace: communityplatform
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate-resolve
+          image: communityplatform-api:v4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
+            # - name: DATABASE_URL
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: api-secret
+            #       key: DATABASE_URL
+          command: ['sh', '-lc']
+          args:
+            - |
+              set -e
+              cd /app/apps/api
+              pnpm dlx prisma migrate resolve --rolled-back 20260103084824_documents_upload --schema ./prisma/schema.prisma
+              pnpm dlx prisma migrate deploy --schema ./prisma/schema.prisma
+              echo "✅ resolve+deploy done"

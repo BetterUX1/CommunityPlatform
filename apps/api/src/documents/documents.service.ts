@@ -16,6 +16,29 @@ export class DocumentsService {
         title: dto.title,
         url: dto.url,
         category: dto.category?.trim() || null,
+        filename: null,
+        mimeType: null,
+        size: null,
+      },
+    });
+  }
+
+  createUploaded(dto: {
+    title: string;
+    category?: string;
+    url: string;
+    filename: string;
+    mimeType: string;
+    size: number;
+  }) {
+    return this.prisma.document.create({
+      data: {
+        title: dto.title,
+        category: dto.category?.trim() || null,
+        url: dto.url,
+        filename: dto.filename,
+        mimeType: dto.mimeType,
+        size: dto.size,
       },
     });
   }
