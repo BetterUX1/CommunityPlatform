@@ -1,5 +1,7 @@
 import { Controller, Get, Param, Res, NotFoundException } from '@nestjs/common';
 import type { Response } from 'express';
+import { FilesService } from './files.service';
+
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

@@ -62,6 +62,6 @@ export class DocumentsController {
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.docs.remove(id);
+    return this.docs.removeDocument(id);
   }
 }

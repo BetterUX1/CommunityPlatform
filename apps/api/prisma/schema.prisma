@@ -22,4 +22,5 @@ model Document {
   mimeType  String?
   size      Int?
   createdAt DateTime @default(now())
+  deletedAt DateTime?
 }
