@@ -5,3 +5,4 @@ metadata:
   namespace: communityplatform
 data:
   PORT: '3000'
+  UPLOAD_MAX_MB: '350'

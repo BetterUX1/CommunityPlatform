@@ -9,6 +9,12 @@ export class FilesService {
   // Same path as multer
   private readonly uploadDir = process.env.UPLOAD_DIR || '/data/uploads';
 
+  /**
+   * Delete file if it exists
+   *
+   * @param filename
+   * @returns
+   */
   async deleteFileIfExists(filename: string) {
     const filePath = path.join(this.uploadDir, filename);
     try {

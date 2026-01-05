@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: documents-cleanup
+spec:
+  schedule: '0 3 * * *' # varje natt kl 03:00
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: communityplatform-api:v10
+              imagePullPolicy: IfNotPresent
+              command:
+                - node
+                - apps/api/dist/src/cleanup.js
+              env:
+                - name: CLEANUP_DAYS
+                  value: '30'
+                - name: DATABASE_URL
+                  value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
+              envFrom:
+                # - secretRef:
+                #     name: api-secret
+                - configMapRef:
+                    name: api-config

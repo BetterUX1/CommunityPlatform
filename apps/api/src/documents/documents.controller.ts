@@ -16,6 +16,8 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 
+const maxMb = parseInt(process.env.UPLOAD_MAX_MB || '350', 10);
+
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly docs: DocumentsService) {}
@@ -41,7 +43,7 @@ export class DocumentsController {
           cb(null, `${id}${ext}`);
         },
       }),
-      limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+      limits: { fileSize: maxMb * 1024 * 1024 }, // maxMB MB as max file size
     }),
   )
   async upload(

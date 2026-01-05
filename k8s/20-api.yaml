@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: communityplatform-api:v8
+          image: communityplatform-api:v10
           #image: ghcr.io/BetterUX1/communityplatform-api:latest -- CI/CD build not working yet
           imagePullPolicy: IfNotPresent
           env:
@@ -23,6 +23,10 @@ spec:
               value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
             - name: UPLOAD_DIR
               value: '/data/uploads'
+
+          envFrom:
+            - configMapRef:
+                name: api-config
 
           ports:
             - containerPort: 3000

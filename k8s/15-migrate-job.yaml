@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: communityplatform-api:v8
+          image: communityplatform-api:v10
           imagePullPolicy: IfNotPresent
           env:
             - name: DATABASE_URL
