@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bootstrap-admin
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: bootstrap-admin
+          image: communityplatform-api:v26
+          command: ['node', 'apps/api/dist/src/scripts/bootstrap-admin.js']
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:postgres@db:5432/samfallighet?schema=public
+            - name: BOOTSTRAP_ADMIN_EMAIL
+              value: admin@local
+            - name: BOOTSTRAP_ADMIN_PASSWORD
+              value: admin123
+            - name: JWT_ACCESS_SECRET
+              value: 'dev-access-secret-change-me'
+            - name: JWT_REFRESH_SECRET
+              value: 'dev-refresh-secret-change-me'

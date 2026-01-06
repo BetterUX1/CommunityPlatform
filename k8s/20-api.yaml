@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: communityplatform-api:v10
+          image: communityplatform-api:v26
           #image: ghcr.io/BetterUX1/communityplatform-api:latest -- CI/CD build not working yet
           imagePullPolicy: IfNotPresent
           env:
@@ -23,6 +23,16 @@ spec:
               value: 'postgresql://postgres:postgres@db:5432/samfallighet?schema=public'
             - name: UPLOAD_DIR
               value: '/data/uploads'
+            - name: JWT_ACCESS_SECRET
+              value: dev-access-secret-change-me
+            - name: JWT_REFRESH_SECRET
+              value: dev-refresh-secret-change-me
+            - name: JWT_ACCESS_TTL
+              value: '15m'
+            - name: JWT_REFRESH_TTL_DAYS
+              value: '14'
+            - name: AUTH_COOKIE_SECURE
+              value: 'false'
 
           envFrom:
             - configMapRef:
