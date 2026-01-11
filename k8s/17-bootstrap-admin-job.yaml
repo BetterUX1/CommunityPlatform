@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: bootstrap-admin
-          image: communityplatform-api:v26
+          image: communityplatform-api:v28
           command: ['node', 'apps/api/dist/src/scripts/bootstrap-admin.js']
           env:
             - name: DATABASE_URL

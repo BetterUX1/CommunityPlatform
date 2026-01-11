@@ -14,7 +14,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: cleanup
-              image: communityplatform-api:v26
+              image: communityplatform-api:v28
               imagePullPolicy: IfNotPresent
               command:
                 - node

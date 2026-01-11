@@ -1,6 +1,17 @@
-import { Controller, Post, Body, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Req,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { CurrentUser } from './current-uesr.decorator';
+import type { CurrentUserPayload } from './current-uesr.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -50,5 +61,11 @@ export class AuthController {
 
     res.clearCookie('refresh_token', { path: '/api/auth' });
     return { ok: true };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  me(@CurrentUser() user: CurrentUserPayload) {
+    return user; // {sub, email, roles[]}
   }
 }
